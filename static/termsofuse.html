@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Use — EatGetHealthy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-deep: #1a3a2a;
+            --green-rich: #2d6a4f;
+            --green-mid: #40916c;
+            --green-soft: #74c69d;
+            --cream: #fefae0;
+            --text-dark: #1b1b1b;
+            --text-mid: #4a4a4a;
+            --text-light: #7a7a7a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            color: var(--text-dark);
+            background: var(--cream);
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 0%, rgba(116,198,157,0.12) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4rem;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--green-deep);
+            text-decoration: none;
+        }
+        .logo span { color: var(--green-mid); }
+        nav a.back {
+            font-size: 0.9rem;
+            color: var(--text-mid);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a.back:hover { color: var(--green-rich); }
+
+        .content {
+            max-width: 750px;
+            margin: 2rem auto 4rem;
+            padding: 0 2rem;
+        }
+        .content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            color: var(--green-deep);
+            margin-bottom: 0.5rem;
+        }
+        .content .updated {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+        }
+        .content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--green-rich);
+            margin: 2rem 0 0.75rem;
+        }
+        .content p {
+            font-size: 1rem;
+            line-height: 1.75;
+            color: var(--text-mid);
+            margin-bottom: 1rem;
+        }
+        .content ul {
+            margin: 0.5rem 0 1rem 1.5rem;
+            color: var(--text-mid);
+            line-height: 1.75;
+        }
+        .content li { margin-bottom: 0.3rem; }
+        .content a { color: var(--green-rich); }
+
+        footer {
+            border-top: 1px solid rgba(45,106,79,0.1);
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .footer-left { font-size: 0.85rem; color: var(--text-light); }
+        .footer-links { display: flex; gap: 1.5rem; }
+        .footer-links a { font-size: 0.85rem; color: var(--text-light); text-decoration: none; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--green-rich); }
+
+        @media (max-width: 768px) {
+            nav { padding: 1.2rem 1.5rem; }
+            footer { padding: 1.5rem; flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">Eat<span>Get</span>Healthy</a>
+        <a href="/" class="back">← Back to Home</a>
+    </nav>
+
+    <div class="content">
+        <h1>Terms of Use</h1>
+        <p class="updated">Last updated: February 24, 2026</p>
+
+        <p>Welcome to EatGetHealthy. By accessing or using this website and its services, you agree to be bound by these Terms of Use. If you do not agree to these terms, please do not use the service.</p>
+
+        <h2>1. Description of Service</h2>
+        <p>EatGetHealthy is an AI-powered health and nutrition knowledge platform. The service allows users to upload health-related documents, build knowledge graphs, and query an AI assistant for information derived from those documents. The service uses retrieval-augmented generation (RAG) technology to provide source-backed responses.</p>
+
+        <h2>2. Not Medical Advice</h2>
+        <p>The information provided by EatGetHealthy is for general informational and educational purposes only. It is <strong>not intended as a substitute for professional medical advice, diagnosis, or treatment</strong>. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of information obtained from this service.</p>
+
+        <h2>3. Acceptable Use</h2>
+        <p>You agree to use the service only for lawful purposes and in accordance with these terms. You agree not to:</p>
+        <ul>
+            <li>Upload documents that are unrelated to health, nutrition, or wellness.</li>
+            <li>Upload content that is illegal, harmful, threatening, abusive, defamatory, or otherwise objectionable.</li>
+            <li>Upload content that infringes on the intellectual property rights of others.</li>
+            <li>Attempt to interfere with, compromise, or disrupt the service or its underlying infrastructure.</li>
+            <li>Use the service to generate misleading or fraudulent health claims.</li>
+            <li>Use automated tools to scrape, crawl, or extract data from the service.</li>
+        </ul>
+
+        <h2>4. Document Uploads</h2>
+        <p>When you upload documents to EatGetHealthy, you represent and warrant that you have the right to upload such content and that it does not violate any third-party rights. Uploaded documents are processed to extract text, entities, and relationships for the knowledge base. The service accepts only health-related documents and may reject content outside this domain.</p>
+
+        <h2>5. AI-Generated Responses</h2>
+        <p>Responses generated by the AI assistant are based on the content of uploaded documents and may not always be accurate, complete, or current. The AI may occasionally produce incorrect or misleading information. You should independently verify any critical information before relying on it for health decisions.</p>
+
+        <h2>6. Intellectual Property</h2>
+        <p>The EatGetHealthy platform, including its design, code, and AI models, is the property of EatGetHealthy and its licensors. You retain ownership of documents you upload. By uploading documents, you grant EatGetHealthy a limited license to process, index, and store the content solely for the purpose of providing the service.</p>
+
+        <h2>7. Limitation of Liability</h2>
+        <p>To the fullest extent permitted by law, EatGetHealthy and its operators shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the service, including but not limited to damages for loss of data, health outcomes, or other intangible losses.</p>
+
+        <h2>8. Availability</h2>
+        <p>We strive to keep the service available at all times but do not guarantee uninterrupted access. The service may be temporarily unavailable due to maintenance, updates, or circumstances beyond our control.</p>
+
+        <h2>9. Modifications</h2>
+        <p>We reserve the right to modify these Terms of Use at any time. Changes will be posted on this page with an updated revision date. Your continued use of the service after changes are posted constitutes your acceptance of the revised terms.</p>
+
+        <h2>10. Governing Law</h2>
+        <p>These terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles.</p>
+
+        <h2>11. Contact</h2>
+        <p>If you have any questions about these Terms of Use, please contact us through the information provided on the website.</p>
+    </div>
+
+    <footer>
+        <div class="footer-left">&copy; 2026 EatGetHealthy. All rights reserved.</div>
+        <div class="footer-links">
+            <a href="/termsofuse">Terms of Use</a>
+            <a href="/privacy">Privacy Policy</a>
+        </div>
+    </footer>
+</body>
+</html>

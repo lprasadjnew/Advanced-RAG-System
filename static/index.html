@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatGetHealthy — Your AI Health & Nutrition Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-deep: #1a3a2a;
+            --green-rich: #2d6a4f;
+            --green-mid: #40916c;
+            --green-soft: #74c69d;
+            --green-pale: #d8f3dc;
+            --cream: #fefae0;
+            --cream-dark: #f4f1de;
+            --warm-brown: #6b4423;
+            --coral: #e07a5f;
+            --text-dark: #1b1b1b;
+            --text-mid: #4a4a4a;
+            --text-light: #7a7a7a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            color: var(--text-dark);
+            background: var(--cream);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Background texture ─────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(116, 198, 157, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(224, 122, 95, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(45, 106, 79, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Grain overlay ──────────────────────────────── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Navigation ─────────────────────────────────── */
+        nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--green-deep);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            color: var(--green-mid);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-mid);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--green-rich);
+        }
+
+        /* ── Hero ───────────────────────────────────────── */
+        .hero {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: rgba(45, 106, 79, 0.08);
+            border: 1px solid rgba(45, 106, 79, 0.15);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--green-rich);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            animation: fadeDown 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.8rem, 5.5vw, 4.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--green-deep);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            animation: fadeDown 0.8s ease-out 0.1s both;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--green-mid);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: var(--text-mid);
+            font-weight: 300;
+            max-width: 620px;
+            margin: 0 auto 3rem;
+            animation: fadeDown 0.8s ease-out 0.2s both;
+        }
+
+        /* ── Decorative leaf divider ────────────────────── */
+        .leaf-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem auto 3rem;
+            animation: fadeDown 0.8s ease-out 0.3s both;
+        }
+
+        .leaf-divider::before,
+        .leaf-divider::after {
+            content: '';
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--green-soft), transparent);
+        }
+
+        .leaf-divider svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--green-soft);
+        }
+
+        /* ── Action cards ───────────────────────────────── */
+        .actions {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 0 2rem;
+            max-width: 900px;
+            margin: 0 auto 5rem;
+            animation: fadeUp 0.9s ease-out 0.4s both;
+        }
+
+        .card {
+            flex: 1;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(45, 106, 79, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow:
+                0 20px 60px rgba(26, 58, 42, 0.1),
+                0 8px 20px rgba(26, 58, 42, 0.06);
+            border-color: rgba(45, 106, 79, 0.2);
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .card:nth-child(1) .card-icon {
+            background: linear-gradient(135deg, rgba(45, 106, 79, 0.1), rgba(116, 198, 157, 0.15));
+        }
+
+        .card:nth-child(2) .card-icon {
+            background: linear-gradient(135deg, rgba(224, 122, 95, 0.1), rgba(224, 122, 95, 0.15));
+        }
+
+        .card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--green-deep);
+            margin-bottom: 0.75rem;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            border-radius: 100px;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .card:nth-child(1) .card-btn {
+            background: var(--green-rich);
+            color: white;
+        }
+
+        .card:nth-child(1):hover .card-btn {
+            background: var(--green-deep);
+        }
+
+        .card:nth-child(2) .card-btn {
+            background: var(--coral);
+            color: white;
+        }
+
+        .card:nth-child(2):hover .card-btn {
+            background: var(--warm-brown);
+        }
+
+        .card-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            transition: transform 0.3s;
+        }
+
+        .card:hover .card-btn svg {
+            transform: translateX(3px);
+        }
+
+        /* ── Features strip ─────────────────────────────── */
+        .features {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            padding: 3rem 2rem;
+            max-width: 900px;
+            margin: 0 auto 4rem;
+            animation: fadeUp 0.9s ease-out 0.5s both;
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-mid);
+        }
+
+        .feature small {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        /* ── Tagline ────────────────────────────────────── */
+        .tagline {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 2rem 2rem 4rem;
+            animation: fadeUp 0.9s ease-out 0.6s both;
+        }
+
+        .tagline p {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            color: var(--text-light);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ── Licenses ────────────────────────────────────── */
+        .licenses {
+            position: relative;
+            z-index: 5;
+            max-width: 900px;
+            margin: 2rem auto 0;
+            padding: 2.5rem 2rem;
+            border-top: 1px solid rgba(45, 106, 79, 0.08);
+        }
+
+        .licenses h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: var(--text-mid);
+            margin-bottom: 0.4rem;
+            text-align: center;
+        }
+
+        .licenses > p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .license-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.4rem 1rem;
+        }
+
+        .license-grid div {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .license-grid span {
+            font-size: 0.75rem;
+            color: var(--text-mid);
+        }
+
+        .license-grid small {
+            font-size: 0.65rem;
+            color: var(--green-mid);
+            background: rgba(45, 106, 79, 0.06);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* ── Footer ─────────────────────────────────────── */
+        footer {
+            position: relative;
+            z-index: 5;
+            border-top: 1px solid rgba(45, 106, 79, 0.1);
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-left {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--green-rich);
+        }
+
+        /* ── Animations ─────────────────────────────────── */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Responsive ─────────────────────────────────── */
+        @media (max-width: 768px) {
+            nav { padding: 1.2rem 1.5rem; }
+            nav ul { gap: 1rem; }
+            .hero { padding: 4rem 1.5rem 2rem; }
+            .actions { flex-direction: column; align-items: center; }
+            .card { max-width: 100%; }
+            .features { flex-wrap: wrap; gap: 1.5rem; }
+            footer { padding: 1.5rem; flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">Eat<span>Get</span>Healthy</a>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-badge">AI-Powered Health Intelligence</div>
+            <h1>Understand how <em>food</em> shapes your <em>health</em></h1>
+            <p>
+                Upload health and nutrition documents, and let our AI extract insights,
+                build knowledge graphs, and answer your questions with source-backed intelligence.
+            </p>
+
+            <div class="leaf-divider">
+                <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/></svg>
+            </div>
+        </section>
+
+        <section class="actions">
+            <a href="/aiquery" class="card">
+                <div class="card-icon">💬</div>
+                <h3>Ask a Question</h3>
+                <p>Chat with our AI about nutrition, diet, and health. Get answers backed by your uploaded research and documents.</p>
+                <span class="card-btn">
+                    Ask a Question
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </span>
+            </a>
+
+            <a href="/documentation" class="card">
+                <div class="card-icon">📄</div>
+                <h3>Upload Documents</h3>
+                <p>Add health articles, research papers, and nutrition guides. The system extracts knowledge and builds a searchable graph.</p>
+                <span class="card-btn">
+                    Upload Health Documents
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </span>
+            </a>
+        </section>
+
+        <section class="features">
+            <div class="feature">
+                <div class="feature-icon">🧠</div>
+                <span>Knowledge Graph</span>
+                <small>Entities &amp; relationships</small>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <span>Hybrid Search</span>
+                <small>Vector + graph retrieval</small>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <span>Conversational Memory</span>
+                <small>Follow-up questions</small>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <span>Source-Backed</span>
+                <small>Cited answers</small>
+            </div>
+        </section>
+
+        <section class="tagline">
+            <p>"Let food be thy medicine, and let medicine be thy food." — Hippocrates</p>
+        </section>
+    </main>
+
+    <section class="licenses">
+        <h4>Open Source Licenses</h4>
+        <p>This application is built with the following open-source technologies:</p>
+        <div class="license-grid">
+            <div><span>FastAPI</span><small>MIT</small></div>
+            <div><span>Uvicorn</span><small>BSD-3</small></div>
+            <div><span>Gradio</span><small>Apache 2.0</small></div>
+            <div><span>LangChain</span><small>MIT</small></div>
+            <div><span>LangChain Google GenAI</span><small>MIT</small></div>
+            <div><span>LangChain Qdrant</span><small>MIT</small></div>
+            <div><span>LangChain Community</span><small>MIT</small></div>
+            <div><span>LangChain Text Splitters</span><small>MIT</small></div>
+            <div><span>Qdrant Client</span><small>Apache 2.0</small></div>
+            <div><span>Sentence Transformers</span><small>Apache 2.0</small></div>
+            <div><span>python-dotenv</span><small>BSD-3</small></div>
+            <div><span>pypdf</span><small>BSD-3</small></div>
+            <div><span>python-docx</span><small>MIT</small></div>
+            <div><span>pdfplumber</span><small>MIT</small></div>
+            <div><span>SQLAlchemy</span><small>MIT</small></div>
+            <div><span>aiosqlite</span><small>MIT</small></div>
+            <div><span>python-multipart</span><small>Apache 2.0</small></div>
+            <div><span>Google GenAI</span><small>Apache 2.0</small></div>
+            <div><span>Pydantic Settings</span><small>MIT</small></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-left">&copy; 2026 EatGetHealthy. All rights reserved.</div>
+        <div class="footer-links">
+            <a href="/termsofuse">Terms of Use</a>
+            <a href="/privacy">Privacy Policy</a>
+        </div>
+    </footer>
+
+</body>
+</html>
