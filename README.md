@@ -15,7 +15,6 @@ A production-ready, domain-specific Retrieval-Augmented Generation system built 
 - **Conversation Memory** — Per-session chat history persisted in SQLite
 - **Multi-Format Support** — PDF, DOCX, TXT, and Markdown documents
 - **Dual Web UIs** — Separate Gradio interfaces for chatting and uploading documents
-- **Docker Support** — Multi-stage Dockerfile and Docker Compose with Qdrant bundled
 - **Health Endpoint** — `/health` returns live system status (LLM, Qdrant, collection)
 
 ---
@@ -39,9 +38,7 @@ Advanced-RAG-System/
         ├── config.py                 # Pydantic Settings — all config from environment
         ├── database.py               # SQLAlchemy models & async SQLite session
         ├── routes_pages.py           # Static HTML page routes
-        ├── requirements.txt          # Pinned dependencies (used by Docker build)
-        ├── Dockerfile                # Multi-stage Docker image
-        ├── docker-compose.yml        # App + Qdrant orchestration
+        ├── requirements.txt          # Pinned dependencies
         │
         ├── services/
         │   ├── rag_service.py        # Orchestrates ingestion and query pipelines
@@ -86,8 +83,6 @@ User question → Embed query → Retrieve top-K chunks from Qdrant
 
 ## Installation
 
-### Option 1 — Local (virtual environment)
-
 ```bash
 # 1. Clone the repository
 git clone https://github.com/lprasadjnew/Advanced-RAG-System.git
@@ -105,10 +100,10 @@ cp .env.example src/Advanced-RAG/.env
 # Edit .env and set your GOOGLE_API_KEY
 ```
 
-Start Qdrant separately:
+Start Qdrant (requires [Qdrant installed](https://qdrant.tech/documentation/guides/installation/)):
 
 ```bash
-docker run -d -p 6333:6333 qdrant/qdrant
+./qdrant
 ```
 
 Run the app:
@@ -116,31 +111,6 @@ Run the app:
 ```bash
 cd src/Advanced-RAG
 python main.py
-```
-
----
-
-### Option 2 — Docker Compose (recommended for production)
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/lprasadjnew/Advanced-RAG-System.git
-cd Advanced-RAG-System/src/Advanced-RAG
-
-# 2. Configure environment variables
-cp ../../.env.example .env
-# Edit .env and set your GOOGLE_API_KEY
-
-# 3. Build and start all services (app + Qdrant)
-docker compose up --build -d
-```
-
-The app and Qdrant start together. Qdrant is reachable internally as `qdrant-service`.
-
-Stop all services:
-
-```bash
-docker compose down
 ```
 
 ---
@@ -236,7 +206,6 @@ Navigate to `http://localhost:8001/aiquery`
 | Conversation storage | SQLite via SQLAlchemy + aiosqlite |
 | Configuration | Pydantic Settings |
 | Packaging | pyproject.toml (PEP 517/518, setuptools) |
-| Containerisation | Docker (multi-stage) + Docker Compose |
 
 ---
 
