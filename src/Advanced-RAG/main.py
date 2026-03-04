@@ -7,18 +7,8 @@ Endpoints:
   GET  /health         → JSON health-check
 """
 
-import os
-import pathlib
 from routes_pages import register_page_routes
-
-# Tell Gradio to stage uploaded files inside our project directory
-# instead of /tmp/gradio (which may be owned by another user/process).
-_UPLOAD_DIR = pathlib.Path(__file__).parent / "uploads"
-_UPLOAD_DIR.mkdir(exist_ok=True)
-os.environ.setdefault("GRADIO_TEMP_DIR", str(_UPLOAD_DIR))
-
 from contextlib import asynccontextmanager
-
 import gradio as gr
 import uvicorn
 from fastapi import FastAPI

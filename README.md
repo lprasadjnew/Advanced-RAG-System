@@ -1,6 +1,8 @@
-# NewRAG — Domain-Specific Retrieval-Augmented Generation System
+# Advanced RAG System
 
-A production-ready RAG system that ingests domain-specific documents, stores them in a vector database, and answers questions using Google Gemini with persistent conversation memory.
+A production-ready, domain-specific Retrieval-Augmented Generation system built with FastAPI, LangChain, Qdrant, and Google Gemini AI. Ingests documents, stores them in a vector database, and answers questions with persistent conversation memory.
+
+**Version:** 1.0.1 &nbsp;|&nbsp; **Author:** Lakshmiprasad Janjam &nbsp;|&nbsp; **License:** MIT
 
 ---
 
@@ -13,36 +15,49 @@ A production-ready RAG system that ingests domain-specific documents, stores the
 - **Conversation Memory** — Per-session chat history persisted in SQLite
 - **Multi-Format Support** — PDF, DOCX, TXT, and Markdown documents
 - **Dual Web UIs** — Separate Gradio interfaces for chatting and uploading documents
+- **Docker Support** — Multi-stage Dockerfile and Docker Compose with Qdrant bundled
 - **Health Endpoint** — `/health` returns live system status (LLM, Qdrant, collection)
 
 ---
 
-## Architecture
+## Project Structure
 
 ```
-/var/www/NewRAG/
-├── main.py                   # FastAPI application entry point
-├── config.py                 # Pydantic Settings — all config from environment
-├── database.py               # SQLAlchemy models & async SQLite session
-├── routes_pages.py           # Static HTML page routes
-├── requirements.txt
-├── .env.example              # Configuration template
+Advanced-RAG-System/
+├── pyproject.toml                    # Project metadata and dependencies (PEP 517/518)
+├── README.md
+├── LICENSE                           # MIT License
+├── LICENSES/
+│   └── THIRD_PARTY_LICENSES.md      # Licenses for all third-party packages
+├── .env.example                      # Configuration template
+├── .gitignore
 │
-├── services/
-│   ├── rag_service.py        # Orchestrates ingestion and query pipelines
-│   ├── document_processor.py # Loads and chunks PDF/DOCX/TXT/MD files
-│   ├── vector_store.py       # Qdrant operations (upsert, retrieve, dedup)
-│   ├── domain_validator.py   # Gemini-based domain classification
-│   └── reranker.py           # Cross-encoder reranking
-│
-├── ui/
-│   ├── chat_ui.py            # Gradio chat interface
-│   └── upload_ui.py          # Gradio document upload interface
-│
-└── static/
-    ├── index.html            # Landing page
-    ├── termsofuse.html
-    └── privacy.html
+└── src/
+    └── Advanced-RAG/
+        ├── __init__.py
+        ├── main.py                   # FastAPI application entry point
+        ├── config.py                 # Pydantic Settings — all config from environment
+        ├── database.py               # SQLAlchemy models & async SQLite session
+        ├── routes_pages.py           # Static HTML page routes
+        ├── requirements.txt          # Pinned dependencies (used by Docker build)
+        ├── Dockerfile                # Multi-stage Docker image
+        ├── docker-compose.yml        # App + Qdrant orchestration
+        │
+        ├── services/
+        │   ├── rag_service.py        # Orchestrates ingestion and query pipelines
+        │   ├── document_processor.py # Loads and chunks PDF/DOCX/TXT/MD files
+        │   ├── vector_store.py       # Qdrant operations (upsert, retrieve, dedup)
+        │   ├── domain_validator.py   # Gemini-based domain classification
+        │   └── reranker.py           # Cross-encoder reranking
+        │
+        ├── ui/
+        │   ├── chat_ui.py            # Gradio chat interface
+        │   └── upload_ui.py          # Gradio document upload interface
+        │
+        └── static/
+            ├── index.html            # Landing page
+            ├── termsofuse.html
+            └── privacy.html
 ```
 
 ### Pipeline Overview
@@ -50,7 +65,7 @@ A production-ready RAG system that ingests domain-specific documents, stores the
 **Ingestion**
 ```
 Upload file → Domain validation (Gemini) → Load & chunk → Hash dedup check
-    → Embed chunks (text-embedding-004) → Store in Qdrant
+    → Embed chunks (gemini-embedding-001) → Store in Qdrant
 ```
 
 **Query**
@@ -63,54 +78,85 @@ User question → Embed query → Retrieve top-K chunks from Qdrant
 
 ## Prerequisites
 
-- Python 3.12+
-- [Qdrant](https://qdrant.tech/) running on `localhost:6333`
+- Python 3.10+
+- [Qdrant](https://qdrant.tech/) running (locally or via Docker)
 - A [Google AI Studio](https://aistudio.google.com/) API key with access to Gemini
 
 ---
 
 ## Installation
 
+### Option 1 — Local (virtual environment)
+
 ```bash
-# 1. Clone / enter the project directory
-cd /var/www/NewRAG
+# 1. Clone the repository
+git clone https://github.com/lprasadjnew/Advanced-RAG-System.git
+cd Advanced-RAG-System
 
 # 2. Create and activate a virtual environment
-python3.12 -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# 3. Install the package and dependencies
+pip install -e .
 
 # 4. Configure environment variables
-cp .env.example .env
-# Edit .env and set your GOOGLE_API_KEY (and any other values you want to override)
+cp .env.example src/Advanced-RAG/.env
+# Edit .env and set your GOOGLE_API_KEY
 ```
 
-### Start Qdrant
-
-Using Docker (simplest):
+Start Qdrant separately:
 
 ```bash
-docker run -d -p 6333:6333 -p 6334:6334 qdrant/qdrant
+docker run -d -p 6333:6333 qdrant/qdrant
 ```
 
-Or follow the [Qdrant installation guide](https://qdrant.tech/documentation/guides/installation/) for a standalone binary.
+Run the app:
+
+```bash
+cd src/Advanced-RAG
+python main.py
+```
+
+---
+
+### Option 2 — Docker Compose (recommended for production)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/lprasadjnew/Advanced-RAG-System.git
+cd Advanced-RAG-System/src/Advanced-RAG
+
+# 2. Configure environment variables
+cp ../../.env.example .env
+# Edit .env and set your GOOGLE_API_KEY
+
+# 3. Build and start all services (app + Qdrant)
+docker compose up --build -d
+```
+
+The app and Qdrant start together. Qdrant is reachable internally as `qdrant-service`.
+
+Stop all services:
+
+```bash
+docker compose down
+```
 
 ---
 
 ## Configuration
 
-All configuration is read from the `.env` file. Copy `.env.example` and edit as needed.
+All configuration is read from the `.env` file (located at `src/Advanced-RAG/.env`). Copy `.env.example` as a starting point.
 
 | Variable | Default | Description |
 |---|---|---|
 | `GOOGLE_API_KEY` | *(required)* | Google Gemini API key |
 | `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model used for generation |
-| `GEMINI_EMBEDDING_MODEL` | `models/text-embedding-004` | Gemini model used for embeddings |
+| `GEMINI_EMBEDDING_MODEL` | `models/gemini-embedding-001` | Gemini model used for embeddings |
 | `DOMAIN` | `health, nutrition, medicine, wellness, diet, fitness` | Comma-separated keywords defining the accepted domain |
-| `DOMAIN_DESCRIPTION` | `Health and wellness knowledge base` | Human-readable domain label (shown in UI) |
-| `QDRANT_HOST` | `localhost` | Qdrant host |
+| `DOMAIN_DESCRIPTION` | `Health and wellness knowledge base` | Human-readable domain label shown in UI |
+| `QDRANT_HOST` | `localhost` | Qdrant host (`qdrant` when using Docker Compose) |
 | `QDRANT_PORT` | `6333` | Qdrant port |
 | `QDRANT_COLLECTION` | `rag_documents` | Qdrant collection name |
 | `CHUNK_SIZE` | `1000` | Target chunk size in characters |
@@ -119,26 +165,11 @@ All configuration is read from the `.env` file. Copy `.env.example` and edit as 
 | `TOP_K_RERANKED` | `4` | Top chunks passed to the LLM after reranking |
 | `APP_HOST` | `0.0.0.0` | Bind host |
 | `APP_PORT` | `8001` | Bind port |
+| `HF_HOME` | `.cache/huggingface` | HuggingFace model cache directory |
+| `SENTENCE_TRANSFORMERS_HOME` | `.cache/torch/sentence_transformers` | Sentence Transformers cache directory |
+| `GRADIO_TEMP_DIR` | `.uploads` | Temporary directory for Gradio file uploads |
 
-**Domain reconfiguration** — to switch from health/wellness to another domain (e.g., legal, finance), update `DOMAIN` and `DOMAIN_DESCRIPTION` in `.env` and restart the app. No code changes are needed.
-
----
-
-## Running
-
-```bash
-# Activate the virtual environment if not already active
-source .venv/bin/activate
-
-# Start the server
-python main.py
-```
-
-Or with Uvicorn directly (development mode with auto-reload):
-
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8001 --reload
-```
+**Domain reconfiguration** — to switch from health/wellness to another domain (e.g., legal, finance), update `DOMAIN` and `DOMAIN_DESCRIPTION` in `.env` and restart the app. No code changes needed.
 
 ---
 
@@ -196,27 +227,31 @@ Navigate to `http://localhost:8001/aiquery`
 | Layer | Technology |
 |---|---|
 | Web framework | FastAPI + Uvicorn |
-| Web UI | Gradio 5 |
-| LLM & embeddings | Google Gemini (`gemini-2.5-flash`, `text-embedding-004`) |
+| Web UI | Gradio |
+| LLM & embeddings | Google Gemini (`gemini-2.5-flash`, `gemini-embedding-001`) |
 | Vector database | Qdrant |
 | RAG framework | LangChain |
 | Reranker | `cross-encoder/ms-marco-MiniLM-L-6-v2` (sentence-transformers) |
 | Document parsing | PyPDF, pdfplumber, python-docx |
 | Conversation storage | SQLite via SQLAlchemy + aiosqlite |
 | Configuration | Pydantic Settings |
+| Packaging | pyproject.toml (PEP 517/518, setuptools) |
+| Containerisation | Docker (multi-stage) + Docker Compose |
 
 ---
 
 ## Development Notes
 
-- Model caches are stored under `.cache/` inside the project directory (`HF_HOME`, `SENTENCE_TRANSFORMERS_HOME`) to keep the environment self-contained
+- Model caches are stored under `.cache/` inside the app directory (`HF_HOME`, `SENTENCE_TRANSFORMERS_HOME`) to keep the environment self-contained
 - The cross-encoder model is downloaded on first startup (~90 MB)
 - Qdrant collection is created automatically on first run if it does not exist
-- The SQLite database file (`conversations.db`) is created automatically on first run
-- Uploaded files are temporarily staged in `uploads/` during processing and not persisted
+- The SQLite database (`conversations.db`) is created automatically on first run
+- Uploaded files are temporarily staged during processing and not persisted
 
 ---
 
 ## License
 
-This project is provided as-is for internal/private use. See `static/termsofuse.html` for terms of use and `static/privacy.html` for the privacy policy.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+Third-party package licenses are listed in [LICENSES/THIRD_PARTY_LICENSES.md](LICENSES/THIRD_PARTY_LICENSES.md).

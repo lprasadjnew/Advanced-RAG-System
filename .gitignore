@@ -2,6 +2,8 @@
 .env
 .env.local
 .env.*.local
+.dockerignore
+Dockerfile
 
 # Database
 *.db
@@ -24,6 +26,7 @@ __pycache__/
 dist/
 build/
 .eggs/
+.cache/
 
 # Virtual environments
 .venv/
